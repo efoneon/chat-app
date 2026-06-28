@@ -175,6 +175,7 @@ html[data-theme="dark"] .theme-icon {
 /* ---- Composer ---- */
 .composer {
   display: flex;
+  align-items: center;
   gap: 10px;
   padding: 14px 18px;
   border-top: 1px solid var(--border);
@@ -234,6 +235,21 @@ button:not(:disabled):hover { opacity: 0.9; }
 }
 .join-card h1 { margin: 0; font-size: 26px; }
 .join-card .subtitle { margin: 0 0 8px; color: var(--text-muted); font-size: 14px; }
+
+/* Name input + theme toggle sit side by side, matched in height */
+.name-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.name-row input { flex: 1; }
+/* Match the input's height (via stretch) but keep the original 36px width. */
+.name-row .theme-toggle {
+  height: auto;
+  width: 36px;
+  flex: none;
+}
+
 .join-card input {
   padding: 12px 14px;
   border: 1px solid var(--border);

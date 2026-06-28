@@ -12,14 +12,19 @@
     <form id="join-form" class="join-card">
       <h1>Chat</h1>
       <p class="subtitle">Pick a name to start chatting.</p>
-      <input
-        id="name-input"
-        type="text"
-        placeholder="Your name"
-        maxlength="32"
-        autocomplete="off"
-        required
-      />
+      <div class="name-row">
+        <input
+          id="name-input"
+          type="text"
+          placeholder="Your name"
+          maxlength="32"
+          autocomplete="off"
+          required
+        />
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+          <img id="theme-icon" class="theme-icon" src="img/dark-mode.png" alt="" />
+        </button>
+      </div>
       <button type="submit">Join</button>
     </form>
   </div>
@@ -30,9 +35,6 @@
         <span class="title">Chat</span>
         <span id="presence" class="presence" aria-live="polite"></span>
       </div>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
-        <img id="theme-icon" class="theme-icon" src="img/dark-mode.png" alt="" />
-      </button>
     </header>
 
     <main id="messages" class="messages" aria-live="polite"></main>
