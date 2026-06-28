@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Name prompt overlay shown until the user joins -->
+  <div id="join-overlay" class="overlay">
+    <form id="join-form" class="join-card">
+      <h1>Chat</h1>
+      <p class="subtitle">Pick a name to start chatting.</p>
+      <input
+        id="name-input"
+        type="text"
+        placeholder="Your name"
+        maxlength="32"
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Join</button>
+    </form>
+  </div>
+
+  <div class="app">
+    <header class="app-header">
+      <div class="header-left">
+        <span class="title">Chat</span>
+        <span id="presence" class="presence" aria-live="polite"></span>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+        <span class="theme-icon"></span>
+      </button>
+    </header>
+
+    <main id="messages" class="messages" aria-live="polite"></main>
+
+    <form id="chat-form" class="composer">
+      <input
+        id="message-input"
+        type="text"
+        placeholder="Type a message…"
+        maxlength="2000"
+        autocomplete="off"
+        disabled
+      />
+      <button id="send-btn" type="submit" disabled>Send</button>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
