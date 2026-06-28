@@ -87,31 +87,25 @@ body {
 .theme-toggle {
   width: 36px;
   height: 36px;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 50%;
+  border-radius: 8px; /* square with slightly rounded corners */
   background: var(--bg);
   cursor: pointer;
   display: grid;
-  place-items: center;
+  place-items: center; /* centers the icon in the button */
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 .theme-toggle:hover { border-color: var(--accent); }
 
 .theme-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: block;
 }
-/* Sun in light mode, moon in dark mode */
-html[data-theme="light"] .theme-icon {
-  border-radius: 50%;
-  background: #f5b301;
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px #f5b301;
-}
+/* Icons are black; invert them to stay visible on the dark button. */
 html[data-theme="dark"] .theme-icon {
-  border-radius: 50%;
-  background: transparent;
-  box-shadow: inset -5px -3px 0 0 #cfd3ff;
+  filter: invert(1);
 }
 
 /* ---- Messages ---- */

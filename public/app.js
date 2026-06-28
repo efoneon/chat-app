@@ -6,19 +6,24 @@
   // ---- Theme ----
   const THEME_KEY = 'chat-theme';
   const root = document.documentElement;
+  const themeIcon = document.getElementById('theme-icon');
 
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
     localStorage.setItem(THEME_KEY, theme);
+    // Show the icon for the mode you'll switch *to*: moon in light, sun in dark.
+    themeIcon.src = theme === 'dark' ? 'img/light-mode.png' : 'img/dark-mode.png';
   }
 
   // Restore saved theme, or follow the OS preference on first visit.
   const saved = localStorage.getItem(THEME_KEY);
+  let initialTheme = 'light';
   if (saved === 'light' || saved === 'dark') {
-    applyTheme(saved);
+    initialTheme = saved;
   } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    applyTheme('dark');
+    initialTheme = 'dark';
   }
+  applyTheme(initialTheme);
 
   document.getElementById('theme-toggle').addEventListener('click', () => {
     const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
