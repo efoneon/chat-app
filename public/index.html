@@ -40,6 +40,23 @@
     <main id="messages" class="messages" aria-live="polite"></main>
 
     <form id="chat-form" class="composer">
+      <!-- Staged attachment preview (shown before sending) -->
+      <div id="attach-preview" class="attach-preview hidden">
+        <div class="attach-preview-media"></div>
+        <button id="attach-remove" class="attach-remove" type="button" aria-label="Remove attachment" title="Remove">✕</button>
+      </div>
+
+      <button
+        id="tools-btn"
+        class="icon-btn"
+        type="button"
+        aria-label="Open tools"
+        aria-expanded="false"
+        title="Tools"
+        disabled
+      >
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
       <input
         id="message-input"
         type="text"
@@ -49,6 +66,27 @@
         disabled
       />
       <button id="send-btn" type="submit" disabled>Send</button>
+
+      <!-- Hidden file picker, triggered from the Attach menu item -->
+      <input id="file-input" type="file" accept="image/*,video/*" hidden />
+
+      <!-- Tools panel: opens above the composer -->
+      <div id="tools-panel" class="tools-panel hidden" role="dialog" aria-label="Tools">
+        <!-- Menu view: list of tools -->
+        <div id="tools-menu" class="tools-view">
+          <button id="open-emojis-btn" class="tools-item" type="button">Emojis</button>
+          <button id="attach-btn" class="tools-item" type="button">Attach</button>
+        </div>
+
+        <!-- Emoji view: shown after clicking "Emojis" -->
+        <div id="tools-emojis" class="tools-view hidden">
+          <div class="tools-header">
+            <button id="emoji-back-btn" class="tools-back" type="button" aria-label="Back">‹ Back</button>
+            <span class="tools-header-title">Emojis</span>
+          </div>
+          <div id="emoji-grid" class="emoji-grid"></div>
+        </div>
+      </div>
     </form>
   </div>
 

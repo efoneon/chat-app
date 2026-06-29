@@ -53,6 +53,15 @@ const wss = new WebSocketServer({ server: httpServer });
 // join/leave notices that occur after they connect.
 const clients = new Map(); // ws -> { name }
 
+// Media (image/video) is sent inline as a base64 data URL. Cap the encoded
+// size so a single attachment can't blow up memory or the WebSocket frame.
+// ~5 MB of raw bytes ≈ ~6.8 MB once base64-encoded.
+const MAX_MEDIA_CHARS = 7_000_000;
+const ALLOWED_MEDIA = {
+  image: /^data:image\/(png|jpeg|jpg|gif|webp);base64,/,
+  video: /^data:video\/(mp4|webm|ogg);base64,/,
+};
+
 function broadcast(message) {
   const payload = JSON.stringify(message);
   for (const ws of wss.clients) {
@@ -104,6 +113,25 @@ wss.on('connection', (ws) => {
         type: 'chat',
         name: client.name,
         text,
+        ts: Date.now(),
+      };
+      broadcast(event);
+    }
+
+    if (msg.type === 'media') {
+      if (!client.name) return; // must join first
+      const kind = msg.kind === 'video' ? 'video' : 'image';
+      const data = typeof msg.data === 'string' ? msg.data : '';
+      // Reject anything that isn't an allowed data URL or is too large.
+      if (!ALLOWED_MEDIA[kind].test(data)) return;
+      if (data.length > MAX_MEDIA_CHARS) return;
+      const caption = sanitize(msg.caption, 2000);
+      const event = {
+        type: 'media',
+        kind,
+        data,
+        caption,
+        name: client.name,
         ts: Date.now(),
       };
       broadcast(event);

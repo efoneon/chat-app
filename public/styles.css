@@ -159,6 +159,32 @@ html[data-theme="dark"] .theme-icon {
   border-bottom-left-radius: 4px;
 }
 
+/* Media (image/video) messages: no bubble background/padding */
+.msg.self .media-bubble,
+.msg.other .media-bubble {
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+}
+.media {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+.media-caption {
+  padding: 6px 2px 2px;
+  color: var(--text); /* readable on the transparent media bubble */
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+/* Right-align the caption under the user's own media */
+.msg.self .media-caption { text-align: right; }
+
 .msg-time {
   font-size: 11px;
   color: var(--text-muted);
@@ -174,13 +200,162 @@ html[data-theme="dark"] .theme-icon {
 
 /* ---- Composer ---- */
 .composer {
+  position: relative; /* anchor for the tools panel */
   display: flex;
+  flex-wrap: wrap; /* let the attachment preview take a full row above the input */
   align-items: center;
   gap: 10px;
   padding: 14px 18px;
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
+
+/* Staged attachment preview (above the input, before sending) */
+.attach-preview {
+  flex-basis: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.attach-preview.hidden { display: none; }
+.attach-preview-media img,
+.attach-preview-media video {
+  display: block;
+  max-height: 120px;
+  max-width: 200px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.attach-remove {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.attach-remove:hover { border-color: var(--accent); }
+
+/* Neutral icon button (tools), distinct from the accent Send button */
+.icon-btn {
+  flex: none;
+  width: 42px;
+  padding: 0;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.icon-btn:hover:not(:disabled) { border-color: var(--accent); }
+
+/* Hamburger icon: three horizontal lines */
+.hamburger,
+.hamburger::before,
+.hamburger::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.hamburger {
+  position: relative;
+}
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+.hamburger::before { top: -6px; }
+.hamburger::after { top: 6px; }
+
+/* ---- Tools panel ---- */
+.tools-panel {
+  position: absolute;
+  left: 18px;
+  bottom: calc(100% + 8px); /* sit just above the composer, aligned to the tools button */
+  width: min(300px, calc(100vw - 36px));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  z-index: 20;
+}
+.tools-panel.hidden { display: none; }
+
+/* Panel views (menu / emojis) */
+.tools-view.hidden { display: none; }
+
+/* Stack menu items with space between them */
+#tools-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Rectangular menu item button, e.g. "Emojis" */
+.tools-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+}
+.tools-item:hover { border-color: var(--accent); }
+
+/* Header inside a sub-view (back button + title) */
+.tools-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.tools-back {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+}
+.tools-back:hover { border-color: var(--accent); color: var(--text); }
+.tools-header-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+}
+.emoji-btn {
+  width: 100%;
+  padding: 4px 0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.emoji-btn:hover { background: var(--bg); }
 
 .composer input {
   flex: 1;
@@ -240,13 +415,13 @@ button:not(:disabled):hover { opacity: 0.9; }
 .name-row {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
 }
 .name-row input { flex: 1; }
-/* Match the input's height (via stretch) but keep the original 36px width. */
+/* Match the input's height (via stretch) with a slightly wider button. */
 .name-row .theme-toggle {
   height: auto;
-  width: 36px;
+  width: 44px;
   flex: none;
 }
 
