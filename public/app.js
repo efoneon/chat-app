@@ -103,8 +103,10 @@
   }
 
   function renderMedia(msg) {
+    // No `.bubble` class here on purpose: media must not get the blue
+    // self/other bubble background — not around the image, not around a caption.
     const bubble = document.createElement('div');
-    bubble.className = 'bubble media-bubble';
+    bubble.className = 'media-bubble';
 
     let media;
     if (msg.kind === 'video') {
@@ -250,9 +252,9 @@
     fileInput.click(); // open the native file picker
   });
 
-  fileInput.addEventListener('change', () => {
-    const file = fileInput.files && fileInput.files[0];
-    fileInput.value = ''; // reset so picking the same file again still fires
+  // Validate a File (image/video, size) and stage it for sending.
+  // Shared by the file picker, clipboard paste, and drag-and-drop.
+  function handleFile(file) {
     if (!file) return;
 
     const isImage = file.type.startsWith('image/');
@@ -273,6 +275,72 @@
     };
     reader.onerror = () => renderSystem('Could not read that file.');
     reader.readAsDataURL(file);
+  }
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files && fileInput.files[0];
+    fileInput.value = ''; // reset so picking the same file again still fires
+    handleFile(file);
+  });
+
+  // Paste an image/video directly into the message input.
+  messageInput.addEventListener('paste', (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.kind === 'file' && /^(image|video)\//.test(item.type)) {
+        const file = item.getAsFile();
+        if (file) {
+          e.preventDefault(); // don't paste a file path / blob text into the input
+          handleFile(file);
+        }
+        return; // one attachment at a time
+      }
+    }
+    // No media in the clipboard => let the normal text paste happen.
+  });
+
+  // Drag-and-drop a file anywhere on the page. Listening on the whole window
+  // (a) lets the user drop over the message area, not just the small composer,
+  // and (b) prevents the browser's default of opening the dropped file.
+  const composer = chatForm;
+
+  function dragHasFiles(e) {
+    return !!e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files');
+  }
+
+  let dragDepth = 0; // track enter/leave across nested elements
+
+  window.addEventListener('dragenter', (e) => {
+    console.log('[dnd] dragenter, types =', e.dataTransfer && Array.from(e.dataTransfer.types));
+    if (!dragHasFiles(e)) return;
+    e.preventDefault();
+    dragDepth++;
+    composer.classList.add('drag-over');
+  });
+
+  window.addEventListener('dragover', (e) => {
+    if (!dragHasFiles(e)) return;
+    e.preventDefault(); // REQUIRED so the drop event fires
+    e.dataTransfer.dropEffect = 'copy';
+  });
+
+  window.addEventListener('dragleave', (e) => {
+    if (!dragHasFiles(e)) return;
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (dragDepth === 0) composer.classList.remove('drag-over');
+  });
+
+  window.addEventListener('drop', (e) => {
+    console.log('[dnd] drop fired, hasFiles =', dragHasFiles(e),
+      '| files =', e.dataTransfer && e.dataTransfer.files.length);
+    if (!dragHasFiles(e)) return;
+    e.preventDefault(); // stop the browser from opening the file
+    dragDepth = 0;
+    composer.classList.remove('drag-over');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    console.log('[dnd] file =', file && file.name, file && file.type, file && file.size);
+    if (file) handleFile(file);
   });
 
   // Show the staged attachment as a preview above the input.

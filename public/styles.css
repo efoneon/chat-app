@@ -159,13 +159,16 @@ html[data-theme="dark"] .theme-icon {
   border-bottom-left-radius: 4px;
 }
 
-/* Media (image/video) messages: no bubble background/padding */
-.msg.self .media-bubble,
-.msg.other .media-bubble {
+/* Media (image/video) messages: bare, no bubble background/padding */
+.media-bubble {
   padding: 0;
   background: transparent;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
+.msg.self .media-bubble { align-items: flex-end; }
+.msg.other .media-bubble { align-items: flex-start; }
 .media {
   display: block;
   max-width: 100%;
@@ -173,17 +176,27 @@ html[data-theme="dark"] .theme-icon {
   border-radius: 10px;
   object-fit: contain;
 }
+
+/* Caption: a normal text-sized blue (self) / grey (other) bubble under the image.
+   Sizes to its text — it does NOT stretch to the image width. */
 .media-caption {
-  padding: 6px 2px 2px;
-  color: var(--text); /* readable on the transparent media bubble */
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
-/* Right-align the caption under the user's own media */
-.msg.self .media-caption { text-align: right; }
+.msg.self .media-caption {
+  background: var(--bubble-self);
+  color: var(--bubble-self-text);
+}
+.msg.other .media-caption {
+  background: var(--bubble-other);
+  color: var(--bubble-other-text);
+}
 
 .msg-time {
   font-size: 11px;
@@ -208,6 +221,11 @@ html[data-theme="dark"] .theme-icon {
   padding: 14px 18px;
   border-top: 1px solid var(--border);
   background: var(--surface);
+}
+/* Highlight while dragging a file over the composer */
+.composer.drag-over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -6px;
 }
 
 /* Staged attachment preview (above the input, before sending) */
