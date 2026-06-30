@@ -54,6 +54,23 @@
 
   let socket = null;
   let myName = null;
+
+  // ---- Sounds ----
+  const sentSound = new Audio('sounds/sent-message.m4a');
+  const receiveSound = new Audio('sounds/message-notification.m4a');
+  sentSound.preload = 'auto';
+  receiveSound.preload = 'auto';
+
+  function playSound(audio) {
+    try {
+      audio.currentTime = 0;
+      // play() may reject if the browser blocks autoplay before any user
+      // interaction; ignore that so it never throws into the message handler.
+      audio.play().catch(() => {});
+    } catch {
+      /* no-op */
+    }
+  }
   // Media staged in the composer, sent on the next Send. null when none.
   let pendingAttachment = null; // { kind: 'image'|'video', data: dataURL }
 
@@ -181,6 +198,12 @@
         setPresence(data.count);
       } else {
         renderMessage(data);
+        // Play the "received" sound only for other people's messages. Our own
+        // messages are echoed back too, but their "sent" sound already played
+        // at send time, so skip them here. System messages stay silent.
+        if ((data.type === 'chat' || data.type === 'media') && data.name !== myName) {
+          playSound(receiveSound);
+        }
       }
     });
 
@@ -440,6 +463,7 @@
       return; // nothing to send
     }
 
+    playSound(sentSound); // play exactly on send (button click or Enter)
     messageInput.value = '';
     messageInput.focus();
     updateSendState();
